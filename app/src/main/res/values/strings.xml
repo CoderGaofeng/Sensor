@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">sensor</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_gyroscope">陀螺仪</string>
+    <string name="action_accelerometer">加速传感器</string>
+    <string name="action_custom">自定义类型</string>
+    <string name="action_start">开始</string>
+    <string name="action_stop">暂停</string>
+    <string name="action_reset">重置</string>
+    <string name="action_capture">捕获</string>
+    <string name="tag_ms">微秒:&#160;</string>
+    <string name="tag_ns">纳秒:&#160; </string>
+    <string name="tag_x">x 轴:&#160; </string>
+    <string name="tag_y">y 轴:&#160; </string>
+    <string name="tag_z">z 轴:&#160; </string>
+</resources>
