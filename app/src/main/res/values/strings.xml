@@ -14,4 +14,6 @@
     <string name="tag_x">x 轴:&#160; </string>
     <string name="tag_y">y 轴:&#160; </string>
     <string name="tag_z">z 轴:&#160; </string>
+    <string name="gps_time">GPS Time :</string>
+    <string name="gps_switch">gps 开关</string>
 </resources>

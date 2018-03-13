@@ -1,12 +1,23 @@
 package com.cathy.sensor;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.Criteria;
+import android.location.GnssStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +26,7 @@ import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.cathy.sensor.databinding.ActivitySensorBinding;
+import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
 import com.prayxiang.support.recyclerview.ListPresenter;
 import com.prayxiang.support.recyclerview.tools.SimpleViewBound;
@@ -27,7 +39,8 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
     private SensorManager mSensorManager;
 
 
-    private ListPresenter<SensorInfo> presenter;
+    private ListPresenter<Object> presenter;
+    private LocationManager mLocationManager;
 
 
     @Override
@@ -35,13 +48,46 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         super.onCreate(savedInstanceState);
         setSupportActionBar(binding.toolbar);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        presenter = ListPresenter.<SensorInfo>create()
+        presenter = ListPresenter.<Object>create()
                 .addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
+                .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
                 .attachWithBound(binding.recyclerView)
                 .display(new ArrayList<>());
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assert mSensorManager != null;
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        assert mLocationManager != null;
+//        mLocationManager.getBestProvider(createFineCriteria(),true);
+
+        checkLocation();
+
     }
+
+    public void checkLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] strings = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(this,
+                    strings, 2);
+        } else {
+           presenter.insert(new LocationInfo(mLocationManager));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        for (int result :
+                grantResults) {
+            if (result == PackageManager.PERMISSION_DENIED) {
+                return;
+            }
+        }
+        checkLocation();
+
+
+    }
+
 
     @Override
     public int getLayoutId() {
@@ -71,35 +117,53 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         switch (item.getItemId()) {
 
             case R.id.action_start: {
-                List<SensorInfo> list = presenter.getItems();
-                for (SensorInfo info :
+                List<Object> list = presenter.getItems();
+                for (Object info :
                         list) {
-                    info.setRunning(true);
+                    if (info instanceof SensorInfo) {
+                        ((SensorInfo) info).setRunning(true);
+                    } else if (info instanceof LocationInfo) {
+                        ((LocationInfo) info).setRunning(true);
+                    }
+
                 }
 
                 break;
             }
             case R.id.action_stop: {
-                List<SensorInfo> list = presenter.getItems();
-                for (SensorInfo info :
+                List<Object> list = presenter.getItems();
+                for (Object info :
                         list) {
-                    info.setRunning(false);
+                    if (info instanceof SensorInfo) {
+                        ((SensorInfo) info).setRunning(false);
+                    } else if (info instanceof LocationInfo) {
+                        ((LocationInfo) info).setRunning(false);
+                    }
+
                 }
+
+
                 break;
             }
             case R.id.action_capture: {
-                List<SensorInfo> list = presenter.getItems();
-                for (SensorInfo info :
+                List<Object> list = presenter.getItems();
+                for (Object info :
                         list) {
-                    info.onClickCapture();
+                    if (info instanceof SensorInfo) {
+                        ((SensorInfo) info).onClickCapture();
+                    }
+
                 }
                 break;
             }
             case R.id.action_reset: {
-                List<SensorInfo> list = presenter.getItems();
-                for (SensorInfo info :
+                List<Object> list = presenter.getItems();
+                for (Object info :
                         list) {
-                    info.onClickReset();
+                    if (info instanceof SensorInfo) {
+                        ((SensorInfo) info).onClickReset();
+                    }
+
                 }
                 break;
             }

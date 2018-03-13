@@ -65,15 +65,16 @@ public class SensorInfoCard extends LinearLayout {
     }
 
 
-
     private static final String PLACE_HOLDER = "";
-    public void reset(){
+
+    public void reset() {
         x.setText(PLACE_HOLDER);
         y.setText(PLACE_HOLDER);
         z.setText(PLACE_HOLDER);
         ms.setText(PLACE_HOLDER);
         ns.setText(PLACE_HOLDER);
     }
+
     @BindingAdapter({"sensorEvent"})
     public static void setSensorEvent(SensorInfoCard card, SensorEvent event) {
 
