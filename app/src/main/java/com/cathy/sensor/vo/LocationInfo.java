@@ -1,16 +1,12 @@
 package com.cathy.sensor.vo;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.cathy.sensor.BR;
@@ -62,6 +58,9 @@ public class LocationInfo extends BaseObservable {
         return -1;
     }
 
+    public Location getLocation() {
+        return location;
+    }
 
     @Bindable
     public boolean isRunning() {

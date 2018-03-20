@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.GnssStatus;
@@ -26,6 +27,8 @@ import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.cathy.sensor.databinding.ActivitySensorBinding;
+import com.cathy.sensor.vo.CaptureValue;
+import com.cathy.sensor.vo.CaptureValues;
 import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
 import com.prayxiang.support.recyclerview.ListPresenter;
@@ -33,6 +36,8 @@ import com.prayxiang.support.recyclerview.tools.SimpleViewBound;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
     private static final String TAG = "sensor";
@@ -41,7 +46,14 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
     private ListPresenter<Object> presenter;
     private LocationManager mLocationManager;
+    private CaptureValues mValues;
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mValues.cancel();
+
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +63,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         presenter = ListPresenter.<Object>create()
                 .addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
                 .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
+                .addViewBinder(CaptureValues.class,new SimpleViewBound(BR.data,R.layout.item_capture_task))
                 .attachWithBound(binding.recyclerView)
                 .display(new ArrayList<>());
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -58,8 +71,9 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         assert mLocationManager != null;
 //        mLocationManager.getBestProvider(createFineCriteria(),true);
-
+        mValues = new CaptureValues(presenter);
         checkLocation();
+        presenter.insert(mValues);
 
     }
 
@@ -69,7 +83,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
             ActivityCompat.requestPermissions(this,
                     strings, 2);
         } else {
-           presenter.insert(new LocationInfo(mLocationManager));
+            presenter.insert(new LocationInfo(mLocationManager));
         }
     }
 
@@ -180,6 +194,10 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                 showInputDialog();
                 break;
 
+            case R.id.action_time:
+                mValues.setRunning(!mValues.isRunning());
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -206,5 +224,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         });
 
     }
+
+
 
 }

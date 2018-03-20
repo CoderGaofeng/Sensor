@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">sensor</string>
+    <string name="app_name">传感器</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_gyroscope">陀螺仪</string>
@@ -16,4 +16,9 @@
     <string name="tag_z">z 轴:&#160; </string>
     <string name="gps_time">GPS Time :</string>
     <string name="gps_switch">gps 开关</string>
+    <string name="action_time">计时</string>
+    <string name="capture_count">捕获次数</string>
+    <string name="saveAsExcel">保存为Excel</string>
+    <string name="capture_state">捕获状态</string>
+    <string name="share">分享</string>
 </resources>
