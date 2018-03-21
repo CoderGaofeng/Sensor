@@ -29,6 +29,9 @@ public class LocationInfo extends BaseObservable {
             Log.i(TAG, "onLocationChanged: "+location);
             LocationInfo.this.location = location;
             notifyPropertyChanged(BR.time);
+            notifyPropertyChanged(BR.altitude);
+            notifyPropertyChanged(BR.latitude);
+            notifyPropertyChanged(BR.longitude);
         }
 
         @Override
@@ -79,5 +82,30 @@ public class LocationInfo extends BaseObservable {
         }
 
         notifyPropertyChanged(BR.running);
+    }
+
+
+    @Bindable
+    public String getAltitude() {
+        if(location!=null){
+            return location.getAltitude()+"";
+        }
+        return null;
+    }
+
+    @Bindable
+    public String getLatitude() {
+        if(location!=null){
+            return location.getLatitude()+"";
+        }
+        return null;
+    }
+
+    @Bindable
+    public String getLongitude() {
+        if(location!=null){
+            return location.getLongitude()+"";
+        }
+        return null;
     }
 }

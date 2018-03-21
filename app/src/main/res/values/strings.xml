@@ -21,4 +21,7 @@
     <string name="saveAsExcel">保存为Excel</string>
     <string name="capture_state">捕获状态</string>
     <string name="share">分享</string>
+    <string name="longitude">经度</string>
+    <string name="latitude">纬度</string>
+    <string name="altitude">高度</string>
 </resources>

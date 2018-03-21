@@ -2,6 +2,7 @@ package com.cathy.sensor.vo;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.media.MediaMetadataRetriever;
@@ -23,7 +24,7 @@ import java.util.TimerTask;
  * Created by xianggaofeng on 2018/3/20.
  */
 
-public class CaptureValues extends BaseObservable{
+public class CaptureValues extends BaseObservable {
     private List<CaptureValue> mValues = new ArrayList<>();
     private FilePresenter presenter = new FilePresenter();
 
@@ -46,24 +47,24 @@ public class CaptureValues extends BaseObservable{
     }
 
     public void setRunning(boolean running) {
-        if(this.running == running){
+        if (this.running == running) {
             return;
         }
         this.running = running;
 
-        if(timer==null){
+        if (timer == null) {
             timer = new Timer();
         }
-        if(timerTask==null){
+        if (timerTask == null) {
             timerTask = new CaptureTask();
         }
-        if(running){
+        if (running) {
             timer.purge();
-            timer.schedule(timerTask,1000,1000);
-        }else {
+            timer.schedule(timerTask, 1000, 1000);
+        } else {
 
             timerTask.cancel();
-            timerTask=null;
+            timerTask = null;
             timer.purge();
         }
 
@@ -72,26 +73,26 @@ public class CaptureValues extends BaseObservable{
 
     public void save(View view) {
         String dir = view.getContext().getExternalCacheDir().getAbsolutePath();
-        String path = dir+ File.separator +"excel";
+        String path = dir + File.separator + "excel";
 
-       String result = presenter.saveExcel(mValues, path);
-       if(result!=null){
-           this.path = result;
-       }else {
-           this.path = null;
-       }
+        String result = presenter.saveExcel(mValues, path);
+        if (result != null) {
+            this.path = result;
+        } else {
+            this.path = null;
+        }
     }
 
-    public void reset(){
+    public void reset() {
         setRunning(false);
         clear();
     }
 
     public void share(View view) {
-        if(path==null){
+        if (path == null) {
             return;
         }
-        FilePresenter.shareFile(view.getContext(),new File(path));
+        FilePresenter.shareFile(view.getContext(), new File(path));
 //        String dir = view.getContext().getFilesDir().getPath();
 //        presenter.saveExcel(mValues, dir);
     }
@@ -114,18 +115,15 @@ public class CaptureValues extends BaseObservable{
 
 
     public void cancel() {
-        if(timerTask!=null){
+        if (timerTask != null) {
             timerTask.cancel();
-            timerTask =null;
+            timerTask = null;
         }
-        if(timer!=null){
+        if (timer != null) {
             timer.cancel();
             timer.purge();
             timer = null;
         }
-
-
-
 
 
         reset();
@@ -140,19 +138,22 @@ public class CaptureValues extends BaseObservable{
             for (Object info :
                     list) {
                 if (info instanceof SensorInfo) {
-                    value.accelerometerTime = ((SensorInfo) info).getTimestamp() + "";
+
                     SensorEvent event = ((SensorInfo) info).getEvent();
-                    if (event != null) {
+                    if (event == null) {
+                        return;
+                    }
+                    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                        value.accelerometerTime = ((SensorInfo) info).getTimestamp() + "";
                         value.aX = event.values[0] + "";
                         value.aY = event.values[1] + "";
                         value.aZ = event.values[2] + "";
-                    }
-                    value.gyroscopeTime = ((SensorInfo) info).getTimestamp() + "";
-                    event = ((SensorInfo) info).getEvent();
-                    if (event != null) {
+                    } else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+                        value.gyroscopeTime = ((SensorInfo) info).getTimestamp() + "";
                         value.gX = event.values[0] + "";
                         value.gY = event.values[1] + "";
                         value.gZ = event.values[2] + "";
+
                     }
 
 
@@ -163,6 +164,7 @@ public class CaptureValues extends BaseObservable{
                         value.gpsTime = location.getTime() + "";
                         value.latitude = location.getLatitude() + "";
                         value.longitude = location.getLongitude() + "";
+                        value.altitude = location.getAltitude()+"";
                     }
                 }
 

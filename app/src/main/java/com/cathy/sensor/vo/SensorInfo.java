@@ -59,10 +59,10 @@ public class SensorInfo extends BaseObservable {
 
     @Bindable
     public long getTimestamp() {
-        if(event!=null){
-            return event.timestamp;
-        }
-        return -1;
+//        if(event!=null){
+//            return event.timestamp;
+//        }
+        return System.currentTimeMillis();
     }
 
     public void setStartTime(long startTime) {

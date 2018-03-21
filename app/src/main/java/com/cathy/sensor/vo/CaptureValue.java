@@ -17,4 +17,9 @@ public class CaptureValue {
     public java.lang.String aY = "";
     public java.lang.String aX = "";
     public java.lang.String accelerometerTime = "";
+
+
+    public String altitude = "";
+
+
 }

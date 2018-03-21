@@ -33,7 +33,7 @@ import jxl.write.biff.RowsExceededException;
 
 public class FilePresenter {
 
-    private static final String[][] MIME_MapTable={
+    private static final String[][] MIME_MapTable = {
 //{后缀名，MIME类型}
             {".3gp", "video/3gpp"},
             {".apk", "application/vnd.android.package-archive"},
@@ -110,7 +110,7 @@ public class FilePresenter {
 
         filePath = filePath + File.separator + System.currentTimeMillis() + ".xls";
 
-        Log.d("xgf",""+filePath);
+        Log.d("xgf", "" + filePath);
         File file = new File(filePath);
         File parent = file.getParentFile();
         if (parent != null) {
@@ -125,6 +125,7 @@ public class FilePresenter {
             sheet.addCell(new Label(c++, r, "GPS time"));
             sheet.addCell(new Label(c++, r, "Latitude"));
             sheet.addCell(new Label(c++, r, "Longitude"));
+            sheet.addCell(new Label(c++, r, "Altitude"));
             sheet.addCell(new Label(c++, r, "Accelerometer Time"));
             sheet.addCell(new Label(c++, r, "X"));
             sheet.addCell(new Label(c++, r, "Y"));
@@ -137,20 +138,35 @@ public class FilePresenter {
 
 
             CaptureValue value;
-            for (c = 0; c < list.size(); c++) {
-                r = 1;
-                value = list.get(c);
-                sheet.addCell(new Label(c, r++, value.gpsTime));
-                sheet.addCell(new Label(c, r++, value.latitude));
-                sheet.addCell(new Label(c, r++, value.longitude));
-                sheet.addCell(new Label(c, r++, value.accelerometerTime));
-                sheet.addCell(new Label(c, r++, value.aX));
-                sheet.addCell(new Label(c, r++, value.aY));
-                sheet.addCell(new Label(c, r++, value.aZ));
-                sheet.addCell(new Label(c, r++, value.gyroscopeTime));
-                sheet.addCell(new Label(c, r++, value.gX));
-                sheet.addCell(new Label(c, r++, value.gY));
+            for (r = 1; r < list.size(); r++) {
+                c = 0;
+                value = list.get(r);
+
+                sheet.addCell(new Label(c++, r, value.gpsTime));
+                sheet.addCell(new Label(c++, r, value.latitude));
+                sheet.addCell(new Label(c++, r, value.longitude));
+                sheet.addCell(new Label(c++, r, value.altitude));
+                sheet.addCell(new Label(c++, r, value.accelerometerTime));
+                sheet.addCell(new Label(c++, r, value.aX));
+                sheet.addCell(new Label(c++, r, value.aY));
+                sheet.addCell(new Label(c++, r, value.aZ));
+
+                sheet.addCell(new Label(c++, r, value.gyroscopeTime));
+                sheet.addCell(new Label(c++, r, value.gX));
+                sheet.addCell(new Label(c++, r, value.gY));
                 sheet.addCell(new Label(c, r, value.gZ));
+
+//                sheet.addCell(new Label(c, r++, value.gpsTime));
+//                sheet.addCell(new Label(c, r++, value.latitude));
+//                sheet.addCell(new Label(c, r++, value.longitude));
+//                sheet.addCell(new Label(c, r++, value.accelerometerTime));
+//                sheet.addCell(new Label(c, r++, value.aX));
+//                sheet.addCell(new Label(c, r++, value.aY));
+//                sheet.addCell(new Label(c, r++, value.aZ));
+//                sheet.addCell(new Label(c, r++, value.gyroscopeTime));
+//                sheet.addCell(new Label(c, r++, value.gX));
+//                sheet.addCell(new Label(c, r++, value.gY));
+//                sheet.addCell(new Label(c, r, value.gZ));
 
             }
 
@@ -197,7 +213,7 @@ public class FilePresenter {
 
             share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 
-            Log.d("xgf",getMIMEType(file));
+            Log.d("xgf", getMIMEType(file));
             share.setType(getMIMEType(file));//此处可发送多种文件
             share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -209,7 +225,6 @@ public class FilePresenter {
 
         }
     }
-
 
 
     /**
