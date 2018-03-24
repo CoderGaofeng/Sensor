@@ -75,7 +75,7 @@ public class LocationInfo extends BaseObservable {
         this.running = running;
         Log.d("xgf",running+"");
         if(running){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 0, locationListener);
 
         }else {
             locationManager.removeUpdates(locationListener);

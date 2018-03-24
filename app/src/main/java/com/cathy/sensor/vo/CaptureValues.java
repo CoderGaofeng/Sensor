@@ -60,7 +60,7 @@ public class CaptureValues extends BaseObservable {
         }
         if (running) {
             timer.purge();
-            timer.schedule(timerTask, 1000, 1000);
+            timer.schedule(timerTask, 50, 50);
         } else {
 
             timerTask.cancel();
