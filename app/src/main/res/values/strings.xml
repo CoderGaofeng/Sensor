@@ -24,4 +24,6 @@
     <string name="longitude">经度</string>
     <string name="latitude">纬度</string>
     <string name="altitude">高度</string>
+    <string name="time">时间</string>
+    <string name="interval">时间间隔</string>
 </resources>

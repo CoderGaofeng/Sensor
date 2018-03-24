@@ -32,6 +32,7 @@ public class LocationInfo extends BaseObservable {
             notifyPropertyChanged(BR.altitude);
             notifyPropertyChanged(BR.latitude);
             notifyPropertyChanged(BR.longitude);
+            notifyPropertyChanged(BR.systemTime);
         }
 
         @Override
@@ -52,6 +53,8 @@ public class LocationInfo extends BaseObservable {
     boolean running;
 
     private Location location;
+    private long lastTime;
+    private long interval;
 
     @Bindable
     public long getTime() {
@@ -60,11 +63,23 @@ public class LocationInfo extends BaseObservable {
         }
         return -1;
     }
+    @Bindable
+    public long getSystemTime(){
+        long time = System.currentTimeMillis();
+        interval = time - lastTime;
+        notifyPropertyChanged(BR.interval);
+        lastTime = time;
+        return time;
+    }
 
     public Location getLocation() {
         return location;
     }
 
+    @Bindable
+    public long getInterval(){
+        return interval;
+    }
     @Bindable
     public boolean isRunning() {
         return running;
@@ -75,7 +90,7 @@ public class LocationInfo extends BaseObservable {
         this.running = running;
         Log.d("xgf",running+"");
         if(running){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, -1, 0, locationListener);
 
         }else {
             locationManager.removeUpdates(locationListener);
