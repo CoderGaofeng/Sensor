@@ -35,6 +35,10 @@ public class SensorInfo extends BaseObservable {
         this.sensor = sensor;
     }
 
+    public Sensor getSensor() {
+        return sensor;
+    }
+
     @Bindable
     public SensorEvent getEvent() {
         return event;

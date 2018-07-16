@@ -6,13 +6,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.media.MediaMetadataRetriever;
-import android.os.Environment;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.cathy.sensor.BR;
 import com.cathy.sensor.presenter.FilePresenter;
-import com.prayxiang.support.recyclerview.ListPresenter;
+import com.prayxiang.support.recyclerview.ObservableList;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class CaptureValues extends BaseObservable {
     private List<CaptureValue> mValues = new ArrayList<>();
     private FilePresenter presenter = new FilePresenter();
 
-    private ListPresenter<Object> listPresenter;
+    private ObservableList<Object> listPresenter;
 
     private boolean running;
 
@@ -37,7 +35,7 @@ public class CaptureValues extends BaseObservable {
     private TimerTask timerTask;
     private String path;
 
-    public CaptureValues(ListPresenter<Object> listPresenter) {
+    public CaptureValues(ObservableList<Object> listPresenter) {
         this.listPresenter = listPresenter;
     }
 
@@ -133,7 +131,7 @@ public class CaptureValues extends BaseObservable {
 
         @Override
         public void run() {
-            List<Object> list = listPresenter.getItems();
+            List<Object> list = listPresenter;
             CaptureValue value = new CaptureValue();
             for (Object info :
                     list) {

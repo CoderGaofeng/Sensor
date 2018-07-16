@@ -4,49 +4,44 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
-import android.location.Criteria;
-import android.location.GnssStatus;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.cathy.sensor.databinding.ActivitySensorBinding;
-import com.cathy.sensor.vo.CaptureValue;
 import com.cathy.sensor.vo.CaptureValues;
 import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
-import com.prayxiang.support.recyclerview.ListPresenter;
+import com.prayxiang.support.common.activity.SimpleActivity;
+import com.prayxiang.support.recyclerview.DataBoundAdapter;
+import com.prayxiang.support.recyclerview.DataBoundViewHolder;
+import com.prayxiang.support.recyclerview.ObservableAdapter;
+import com.prayxiang.support.recyclerview.ObservableList;
 import com.prayxiang.support.recyclerview.tools.SimpleViewBound;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
+public class SensorActivity extends SimpleActivity<ActivitySensorBinding> {
     private static final String TAG = "sensor";
     private SensorManager mSensorManager;
 
 
-    private ListPresenter<Object> presenter;
     private LocationManager mLocationManager;
     private CaptureValues mValues;
+
+    private ObservableList<Object> presenter = new ObservableList<>();
 
     @Override
     protected void onDestroy() {
@@ -60,18 +55,17 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         super.onCreate(savedInstanceState);
         setSupportActionBar(binding.toolbar);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        presenter = ListPresenter.<Object>create()
-                .addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
+        ObservableAdapter adapter = new ObservableAdapter(presenter);
+        adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
                 .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
-                .addViewBinder(CaptureValues.class,new SimpleViewBound(BR.data,R.layout.item_capture_task))
-                .attachWithBound(binding.recyclerView)
-                .display(new ArrayList<>());
+                .addViewBinder(CaptureValues.class, new SimpleViewBound(com.cathy.sensor.BR.data, R.layout.item_capture_task));
+
+        binding.recyclerView.setAdapter(adapter);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assert mSensorManager != null;
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         assert mLocationManager != null;
-//        mLocationManager.getBestProvider(createFineCriteria(),true);
-        mValues = new CaptureValues(presenter);
+        mValues = new CaptureValues(adapter.getItems());
         checkLocation();
         presenter.insert(mValues);
 
@@ -108,8 +102,15 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         return R.layout.activity_sensor;
     }
 
+
+    final void onCreateSensorMenu(SensorInfo info) {
+
+
+        presenter.insert(info);
+    }
     final void onCreateSensorMenu(int type) {
         SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         Sensor sensor = mSensorManager.getDefaultSensor(type);
         if (sensor == null) {
             Toast.makeText(this, "不支持类型", Toast.LENGTH_LONG).show();
@@ -118,6 +119,19 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         SensorInfo info = new SensorInfo(manager, sensor);
 
         presenter.insert(info);
+    }
+    final List<SensorInfo> requestSensorList() {
+        SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        List<SensorInfo> sensorInfos = new ArrayList<>();
+        for (Sensor sensor :
+                sensors) {
+            SensorInfo info = new SensorInfo(manager, sensor);
+            sensorInfos.add(info);
+        }
+
+        return sensorInfos;
     }
 
     @Override
@@ -131,7 +145,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         switch (item.getItemId()) {
 
             case R.id.action_start: {
-                List<Object> list = presenter.getItems();
+                List<Object> list = presenter;
                 for (Object info :
                         list) {
                     if (info instanceof SensorInfo) {
@@ -145,7 +159,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                 break;
             }
             case R.id.action_stop: {
-                List<Object> list = presenter.getItems();
+                List<Object> list = presenter;
                 for (Object info :
                         list) {
                     if (info instanceof SensorInfo) {
@@ -160,7 +174,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                 break;
             }
             case R.id.action_capture: {
-                List<Object> list = presenter.getItems();
+                List<Object> list = presenter;
                 for (Object info :
                         list) {
                     if (info instanceof SensorInfo) {
@@ -171,7 +185,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                 break;
             }
             case R.id.action_reset: {
-                List<Object> list = presenter.getItems();
+                List<Object> list = presenter;
                 for (Object info :
                         list) {
                     if (info instanceof SensorInfo) {
@@ -203,13 +217,27 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
     }
 
     private void showInputDialog() {
-        final NumberPicker picker = new NumberPicker(this);
-        picker.setMinValue(0);
-        picker.setMaxValue(40);
+        RecyclerView recyclerView = new RecyclerView(this);
         final Dialog dialog = new AlertDialog.Builder(this)
-                .setView(picker)
-                .setPositiveButton("确定", (d, which) -> onCreateSensorMenu(picker.getValue()))
+                .setView(recyclerView)
                 .create();
+
+        DataBoundAdapter adapter = new DataBoundAdapter();
+        adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor_select) {
+            @Override
+            public void onDataBoundCreated(DataBoundViewHolder vh) {
+                super.onDataBoundCreated(vh);
+                vh.binding.getRoot().setOnClickListener(v -> {
+                    dialog.dismiss();
+                    onCreateSensorMenu(vh.getItem());
+                });
+            }
+        });
+        adapter.display(requestSensorList());
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+
         dialog.show();
         binding.getRoot().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -224,7 +252,6 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         });
 
     }
-
 
 
 }
