@@ -2,24 +2,17 @@ package com.cathy.sensor.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.Build;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.cathy.sensor.vo.CaptureValue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.List;
 
-import jxl.Sheet;
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
@@ -207,12 +200,15 @@ public class FilePresenter {
         if (null != file && file.exists()) {
             Intent share = new Intent(Intent.ACTION_SEND);
             Log.d("xgf", context.getPackageName());
-            Uri fileUri = FileProvider.getUriForFile(context, context.getPackageName(), file);
-            Log.d("xgf", fileUri + "");
+
             share.putExtra(Intent.EXTRA_SUBJECT, "The is excel");
-
-            share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+                Uri fileUri = FileProvider.getUriForFile(context, context.getPackageName(), file);
+                share.putExtra(Intent.EXTRA_STREAM, fileUri);
+                Log.d("xgf", fileUri + "");
+            } else {
+                share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            }
             Log.d("xgf", getMIMEType(file));
             share.setType(getMIMEType(file));//此处可发送多种文件
             share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -241,7 +237,7 @@ public class FilePresenter {
         if (dotIndex < 0) {
             return type;
         }
-/* 获取文件的后缀名*/
+        /* 获取文件的后缀名*/
         String end = fName.substring(dotIndex, fName.length()).toLowerCase();
         if (end == "") return type;
 //在MIME和文件类型的匹配表中找到对应的MIME类型。
