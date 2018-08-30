@@ -1,1 +1,9 @@
-include ':app'
+
+def modulePrefix = ':'
+def modulePath = "Library/"
+
+include ':app', ':recyclerview', ':middleware'
+
+project(modulePrefix + 'recyclerview').projectDir = new File(rootDir, modulePath+'recyclerview')
+
+project(modulePrefix + 'middleware').projectDir = new File(rootDir, modulePath+'middleware')
