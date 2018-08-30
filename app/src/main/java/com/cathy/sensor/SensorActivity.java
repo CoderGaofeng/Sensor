@@ -77,37 +77,37 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                             }
                         });
                         TextureView textureView = ((ItemCameraBinding) vh.binding).textureView;
-                        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
-
-                            @Override
-                            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+//                        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
 //
-//                                try {
-//                                    Camera camera = vh.getItem();
-////                                    camera.getCamera().setPreviewTexture(surface);
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-
-                            }
-
-                            @Override
-                            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
-                            }
-
-                            @Override
-                            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-                                Camera camera = vh.getItem();
-                                camera.getCamera().stopPreview();
-                                return false;
-                            }
-
-                            @Override
-                            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-                            }
-                        });
+//                            @Override
+//                            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+////
+////                                try {
+////                                    Camera camera = vh.getItem();
+//////                                    camera.getCamera().setPreviewTexture(surface);
+////                                } catch (IOException e) {
+////                                    e.printStackTrace();
+////                                }
+//
+//                            }
+//
+//                            @Override
+//                            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+//
+//                            }
+//
+//                            @Override
+//                            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+//                                Camera camera = vh.getItem();
+//                                camera.getCamera().stopPreview();
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+//
+//                            }
+//                        });
                     }
 
 //                    @Override
