@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import com.and.middleware.event.Resource;
 
 
-public abstract class ObservableViewModel<Param, V> extends DataBoundViewModel {
+public abstract class ObservableViewModel<Param, V> extends AndViewModel {
 
 
     private MutableLiveData<Param> liveData = new MutableLiveData<>();

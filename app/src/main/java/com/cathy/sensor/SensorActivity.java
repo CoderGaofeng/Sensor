@@ -31,6 +31,7 @@ import com.cathy.sensor.vo.SensorInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
     private static final String TAG = "sensor";
     private SensorManager mSensorManager;
@@ -105,6 +106,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
         presenter.insert(info);
     }
+
     final void onCreateSensorMenu(int type) {
         SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -117,6 +119,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
         presenter.insert(info);
     }
+
     final List<SensorInfo> requestSensorList() {
         SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);

@@ -19,7 +19,7 @@ import com.and.middleware.event.Tip;
  * Created by xianggaofeng on 2018/1/30.
  */
 
-public class DataBoundViewModel extends ViewModel implements RetryCallback, Observable {
+public class AndViewModel extends ViewModel implements RetryCallback, Observable {
     private String title;
 
     private String key;
