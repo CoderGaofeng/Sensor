@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
@@ -12,23 +14,30 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.and.support.recyclerview.DataBoundAdapter;
 import com.and.support.recyclerview.DataBoundViewHolder;
 import com.and.support.recyclerview.ObservableAdapter;
 import com.and.support.recyclerview.ObservableList;
+import com.and.support.recyclerview.ViewHolder;
 import com.and.support.recyclerview.tools.SimpleViewBound;
 import com.cathy.sensor.databinding.ActivitySensorBinding;
+import com.cathy.sensor.databinding.ItemCameraBinding;
+import com.cathy.sensor.vo.Camera;
 import com.cathy.sensor.vo.CaptureValues;
 import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +48,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
     private LocationManager mLocationManager;
     private CaptureValues mValues;
+
 
     private ObservableList<Object> presenter = new ObservableList<>();
 
@@ -56,6 +66,64 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         ObservableAdapter adapter = new ObservableAdapter(presenter);
         adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
                 .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
+                .addViewBinder(Camera.class, new SimpleViewBound(BR.data, R.layout.item_camera) {
+                    @Override
+                    public void onDataBoundCreated(DataBoundViewHolder vh) {
+                        super.onDataBoundCreated(vh);
+                        vh.binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                vh.getContext().startActivity(new Intent(v.getContext(),DetailActivity.class));
+                            }
+                        });
+                        TextureView textureView = ((ItemCameraBinding) vh.binding).textureView;
+                        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+
+                            @Override
+                            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+//
+//                                try {
+//                                    Camera camera = vh.getItem();
+////                                    camera.getCamera().setPreviewTexture(surface);
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                }
+
+                            }
+
+                            @Override
+                            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+                            }
+
+                            @Override
+                            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                                Camera camera = vh.getItem();
+                                camera.getCamera().stopPreview();
+                                return false;
+                            }
+
+                            @Override
+                            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+                            }
+                        });
+                    }
+
+//                    @Override
+//                    public void onViewAttachedToWindow(ViewHolder viewHolder) {
+//                        super.onViewAttachedToWindow(viewHolder);
+//                        Camera camera = viewHolder.getItem();
+//                        camera.getCamera().startPreview();
+//                    }
+//
+//                    @Override
+//                    public void onViewDetachedFromWindow(ViewHolder viewHolder) {
+//                        super.onViewDetachedFromWindow(viewHolder);
+//                        Camera camera = viewHolder.getItem();
+//                        camera.getCamera().stopPreview();
+//                    }
+                })
                 .addViewBinder(CaptureValues.class, new SimpleViewBound(BR.data, R.layout.item_capture_task));
 
         binding.recyclerView.setAdapter(adapter);
@@ -69,15 +137,34 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
     }
 
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+    }
+
     public void checkLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] strings = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            String[] strings = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.CAMERA
+
+            };
             ActivityCompat.requestPermissions(this,
                     strings, 2);
         } else {
             presenter.insert(new LocationInfo(mLocationManager));
+            presenter.insert(new Camera());
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -210,10 +297,35 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
             case R.id.action_time:
                 mValues.setRunning(!mValues.isRunning());
+
+                Intent intent = new Intent();
+//                intent = new Intent(SensorActivity.this,DetailActivity.class);
+
+//                intent.setClassName(getPackageName(),DetailActivity.class.getName());
+
+                intent.setClass(SensorActivity.this,DetailActivity.class);
+
+                if(intent.resolveActivity(getPackageManager())!=null){
+                    startActivityForResult(intent,1);
+                }
+
+
+
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode==RESULT_OK&&requestCode==1){
+            Toast.makeText(this,"获得数据："+data.getStringExtra("value"),Toast.LENGTH_LONG)
+                    .show();
+        }
     }
 
     private void showInputDialog() {
@@ -222,6 +334,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                 .setView(recyclerView)
                 .create();
 
+        ViewGroup viewGroup;
         DataBoundAdapter adapter = new DataBoundAdapter();
         adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor_select) {
             @Override
@@ -252,6 +365,13 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         });
 
     }
+
+
+
+
+
+
+
 
 
 }
