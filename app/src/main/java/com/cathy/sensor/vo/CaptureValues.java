@@ -8,9 +8,9 @@ import android.location.Location;
 import android.media.MediaMetadataRetriever;
 import android.view.View;
 
+import com.and.support.recyclerview.ObservableList;
 import com.cathy.sensor.BR;
 import com.cathy.sensor.presenter.FilePresenter;
-import com.prayxiang.support.recyclerview.ObservableList;
 
 import java.io.File;
 import java.util.ArrayList;

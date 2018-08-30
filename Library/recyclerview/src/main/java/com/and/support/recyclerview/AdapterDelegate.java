@@ -1,13 +1,12 @@
 package com.and.support.recyclerview;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.List;
 
-public abstract class AdapterDelegate extends RecyclerView.Adapter<ViewHolder> {
+public abstract class AdapterDelegate {
 
     private static ErrorViewBinder defaultViewBinder = new ErrorViewBinder();
     private LayoutInflater inflater;
@@ -18,7 +17,6 @@ public abstract class AdapterDelegate extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @NonNull
-    @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
@@ -31,7 +29,6 @@ public abstract class AdapterDelegate extends RecyclerView.Adapter<ViewHolder> {
         return binder.onCreateViewHolder(inflater, parent);
     }
 
-    @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
         ViewBinder binder = provider.getViewBinder(holder.getItemViewType());
         if (binder == null) {
@@ -41,7 +38,6 @@ public abstract class AdapterDelegate extends RecyclerView.Adapter<ViewHolder> {
         binder.onBindViewHolder(holder, payloads);
     }
 
-    @Override
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         ViewBinder binder = provider.getViewBinder(holder.getItemViewType());
         if (binder == null) {
@@ -50,7 +46,6 @@ public abstract class AdapterDelegate extends RecyclerView.Adapter<ViewHolder> {
         binder.onViewAttachedToWindow(holder);
     }
 
-    @Override
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
         ViewBinder binder = provider.getViewBinder(holder.getItemViewType());
         if (binder == null) {
@@ -63,4 +58,7 @@ public abstract class AdapterDelegate extends RecyclerView.Adapter<ViewHolder> {
 
     public abstract Object getItem(int position);
 
+    public int getItemViewType(int position) {
+        return provider.getItemViewType(getItem(position));
+    }
 }

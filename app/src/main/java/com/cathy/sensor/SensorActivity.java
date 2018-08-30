@@ -19,21 +19,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.and.support.recyclerview.DataBoundAdapter;
+import com.and.support.recyclerview.DataBoundViewHolder;
+import com.and.support.recyclerview.ObservableAdapter;
+import com.and.support.recyclerview.ObservableList;
+import com.and.support.recyclerview.tools.SimpleViewBound;
 import com.cathy.sensor.databinding.ActivitySensorBinding;
 import com.cathy.sensor.vo.CaptureValues;
 import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
-import com.prayxiang.support.common.activity.SimpleActivity;
-import com.prayxiang.support.recyclerview.DataBoundAdapter;
-import com.prayxiang.support.recyclerview.DataBoundViewHolder;
-import com.prayxiang.support.recyclerview.ObservableAdapter;
-import com.prayxiang.support.recyclerview.ObservableList;
-import com.prayxiang.support.recyclerview.tools.SimpleViewBound;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class SensorActivity extends SimpleActivity<ActivitySensorBinding> {
+public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
     private static final String TAG = "sensor";
     private SensorManager mSensorManager;
 
@@ -47,7 +45,6 @@ public class SensorActivity extends SimpleActivity<ActivitySensorBinding> {
     protected void onDestroy() {
         super.onDestroy();
         mValues.cancel();
-
     }
 
     @Override
@@ -58,7 +55,7 @@ public class SensorActivity extends SimpleActivity<ActivitySensorBinding> {
         ObservableAdapter adapter = new ObservableAdapter(presenter);
         adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
                 .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
-                .addViewBinder(CaptureValues.class, new SimpleViewBound(com.cathy.sensor.BR.data, R.layout.item_capture_task));
+                .addViewBinder(CaptureValues.class, new SimpleViewBound(BR.data, R.layout.item_capture_task));
 
         binding.recyclerView.setAdapter(adapter);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);

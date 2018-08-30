@@ -38,11 +38,8 @@ public class BaseAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
                 return items.get(position);
             }
 
-            @Override
-            public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-            }
         };
+
     }
 
     public BaseAdapter() {
