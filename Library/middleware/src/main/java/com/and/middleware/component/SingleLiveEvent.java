@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.and.middleware.component.lifecycle;
+package com.and.middleware.component;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;

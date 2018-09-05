@@ -1,4 +1,4 @@
-package com.and.middleware.component.lifecycle;
+package com.and.middleware.component;
 
 import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
