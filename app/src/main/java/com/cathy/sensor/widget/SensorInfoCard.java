@@ -88,6 +88,13 @@ public class SensorInfoCard extends LinearLayout {
             return;
         }
 
+        if (values.length != 3) {
+            float[] old = new float[3];
+            for (int i = 0; i < values.length; i++) {
+                old[i] = values[i];
+            }
+            values = old;
+        }
         card.x.setText(String.valueOf(values[0]));
         card.y.setText(String.valueOf(values[1]));
         card.z.setText(String.valueOf(values[2]));
