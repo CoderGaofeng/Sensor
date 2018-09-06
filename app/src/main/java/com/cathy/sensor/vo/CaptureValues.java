@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.location.Location;
 import android.media.MediaMetadataRetriever;
 import android.view.View;
+import android.widget.Toast;
 
 import com.and.support.recyclerview.ObservableList;
 import com.cathy.sensor.BR;
@@ -73,7 +74,8 @@ public class CaptureValues extends BaseObservable {
         String dir = view.getContext().getExternalCacheDir().getAbsolutePath();
         String path = dir + File.separator + "excel";
 
-        String result = presenter.saveExcel(mValues, path);
+        String result = presenter.saveText(mValues,path);
+        Toast.makeText(view.getContext(),""+result,Toast.LENGTH_SHORT).show();
         if (result != null) {
             this.path = result;
         } else {

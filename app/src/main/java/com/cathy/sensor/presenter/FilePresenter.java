@@ -10,6 +10,7 @@ import android.util.Log;
 import com.cathy.sensor.vo.CaptureValue;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class FilePresenter {
         WritableWorkbook workbook = null;
 
 
-        filePath = filePath + File.separator + System.currentTimeMillis() + ".xls";
+        filePath = filePath + File.separator + System.currentTimeMillis() + ".txt";
 
         Log.d("xgf", "" + filePath);
         File file = new File(filePath);
@@ -163,6 +164,7 @@ public class FilePresenter {
 
             }
 
+
             workbook.write();
             result = true;
 
@@ -194,6 +196,101 @@ public class FilePresenter {
         return null;
     }
 
+
+    public synchronized String saveText(List<CaptureValue> list, String filePath) {
+        boolean result = false;
+        WritableWorkbook workbook = null;
+
+
+        filePath = filePath + File.separator + System.currentTimeMillis() + ".txt";
+
+        Log.d("xgf", "" + filePath);
+        File file = new File(filePath);
+        File parent = file.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("GPS time")
+                    .append(", ")
+                    .append("Latitude")
+                    .append(", ")
+                    .append("Longitude")
+                    .append(", ")
+                    .append("Altitude")
+                    .append(", ")
+                    .append("Accelerometer Time")
+                    .append(", ")
+                    .append("X")
+                    .append(", ")
+                    .append("Y")
+                    .append(", ")
+                    .append("Z")
+                    .append(", ")
+                    .append("Gyroscope Time")
+                    .append(", ")
+                    .append("X")
+                    .append(", ")
+                    .append("Y")
+                    .append(", ")
+                    .append("Z")
+                    .append("\n");
+            CaptureValue value;
+            for (int i = 1; i < list.size(); i++) {
+                value = list.get(i);
+                builder.append(value.gpsTime)
+                        .append(", ")
+                        .append(value.latitude)
+                        .append(", ")
+                        .append(value.longitude)
+                        .append(", ")
+                        .append(value.altitude)
+                        .append(", ")
+                        .append(value.accelerometerTime)
+                        .append(", ")
+                        .append(value.aX)
+                        .append(", ")
+                        .append(value.aY)
+                        .append(", ")
+                        .append(value.aZ)
+                        .append(", ")
+                        .append(value.gyroscopeTime)
+                        .append(", ")
+                        .append(value.gX)
+                        .append(", ")
+                        .append(value.gY)
+                        .append(", ")
+                        .append(value.gZ)
+                        .append("\n");
+            }
+
+
+            writer.write(builder.toString());
+
+
+            result = true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            result = false;
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        if (result) {
+            return filePath;
+        }
+        return null;
+    }
 
     // 調用系統方法分享文件
     public static void shareFile(Context context, File file) {

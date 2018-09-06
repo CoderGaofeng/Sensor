@@ -55,6 +55,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(binding.toolbar);
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         ObservableAdapter adapter = new ObservableAdapter(presenter);
         adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
