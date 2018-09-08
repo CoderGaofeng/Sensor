@@ -75,9 +75,12 @@ public class CaptureValues extends BaseObservable {
                 timerTask.cancel();
                 timerTask=null;
             }
-            timer.purge();
-            timer.cancel();
-            timer = null;
+            if(timer!=null){
+                timer.purge();
+                timer.cancel();
+                timer = null;
+
+            }
 
         }
         notifyPropertyChanged(BR.running);

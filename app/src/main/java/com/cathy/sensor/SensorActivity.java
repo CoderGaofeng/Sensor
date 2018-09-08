@@ -68,8 +68,11 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         assert mLocationManager != null;
         mValues = new Capture(adapter.getItems());
-        checkLocation();
         presenter.insert(mValues);
+        checkLocation();
+
+
+
 
     }
 
@@ -97,6 +100,8 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
                     strings, 2);
         } else {
             presenter.insert(new LocationInfo(mLocationManager));
+            onCreateSensorMenu(Sensor.TYPE_ACCELEROMETER);
+            onCreateSensorMenu(Sensor.TYPE_GYROSCOPE);
         }
     }
 
