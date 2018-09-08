@@ -18,7 +18,7 @@
     <string name="gps_switch">gps 开关</string>
     <string name="action_time">计时</string>
     <string name="capture_count">捕获次数</string>
-    <string name="saveAsExcel">保存为Excel</string>
+    <string name="saveAsExcel">保存为TXT</string>
     <string name="capture_state">捕获状态</string>
     <string name="share">分享</string>
     <string name="longitude">经度</string>

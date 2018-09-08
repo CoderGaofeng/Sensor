@@ -5,21 +5,31 @@ package com.cathy.sensor.vo;
  */
 
 public class CaptureValue {
-    public String gpsTime = "";
-    public java.lang.String latitude = "";
 
-    public java.lang.String longitude = "";
-    public java.lang.String gyroscopeTime = "";
-    public java.lang.String gX = "";
-    public java.lang.String gY = "";
-    public java.lang.String gZ = "";
-    public java.lang.String aZ = "";
-    public java.lang.String aY = "";
-    public java.lang.String aX = "";
-    public java.lang.String accelerometerTime = "";
+    public int type;
+    public String name;
+
+    public String x;
+    public String y;
+    public String z;
+    public String time;
 
 
-    public String altitude = "";
+//    public String gpsTime = "";
+//    public java.lang.String latitude = "";
+//
+//    public java.lang.String longitude = "";
+//    public java.lang.String gyroscopeTime = "";
+//    public java.lang.String gX = "";
+//    public java.lang.String gY = "";
+//    public java.lang.String gZ = "";
+//    public java.lang.String aZ = "";
+//    public java.lang.String aY = "";
+//    public java.lang.String aX = "";
+//    public java.lang.String accelerometerTime = "";
+//
+//
+//    public String altitude = "";
 
 
 }

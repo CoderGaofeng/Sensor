@@ -39,5 +39,6 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.0'
     // ViewModel and LiveData
     implementation files('libs/jxl.jar')
+    compile 'pub.devrel:easypermissions:1.0.1'
 
 }

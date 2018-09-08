@@ -5,7 +5,6 @@ import android.databinding.Bindable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.location.Location;
-import android.media.MediaMetadataRetriever;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,10 +33,15 @@ public class CaptureValues extends BaseObservable {
 
     private Timer timer;
     private TimerTask timerTask;
-    private String path;
 
-    public CaptureValues(ObservableList<Object> listPresenter) {
+
+    private String path;
+    private int type;
+
+    public CaptureValues(ObservableList<Object> listPresenter, int type) {
         this.listPresenter = listPresenter;
+        timer = new Timer();
+        this.type = type;
     }
 
     @Bindable
@@ -51,22 +55,31 @@ public class CaptureValues extends BaseObservable {
         }
         this.running = running;
 
-        if (timer == null) {
-            timer = new Timer();
-        }
-        if (timerTask == null) {
-            timerTask = new CaptureTask();
-        }
+
         if (running) {
+
+            if(timer==null){
+                timer = new Timer();
+            }
             timer.purge();
-            timer.schedule(timerTask, 50, 50);
+            int period;
+            if (type == -1) {
+                period = 1000;
+            } else {
+                period = 25;
+            }
+            timer.schedule(new CaptureTask(type), 50, period);
+
         } else {
-
-            timerTask.cancel();
-            timerTask = null;
+            if(timerTask!=null){
+                timerTask.cancel();
+                timerTask=null;
+            }
             timer.purge();
-        }
+            timer.cancel();
+            timer = null;
 
+        }
         notifyPropertyChanged(BR.running);
     }
 
@@ -74,8 +87,16 @@ public class CaptureValues extends BaseObservable {
         String dir = view.getContext().getExternalCacheDir().getAbsolutePath();
         String path = dir + File.separator + "excel";
 
-        String result = presenter.saveText(mValues,path);
-        Toast.makeText(view.getContext(),""+result,Toast.LENGTH_SHORT).show();
+        String name = "";
+        if (type == -1) {
+            name = "gps";
+        } else if (type == Sensor.TYPE_GYROSCOPE) {
+            name = "g";
+        } else if (type == Sensor.TYPE_ACCELEROMETER) {
+            name = "a";
+        }
+        String result = presenter.saveText(mValues, path, name);
+        Toast.makeText(view.getContext(), "" + result, Toast.LENGTH_SHORT).show();
         if (result != null) {
             this.path = result;
         } else {
@@ -106,6 +127,7 @@ public class CaptureValues extends BaseObservable {
         mValues.add(value);
         notifyPropertyChanged(BR.count);
 
+
     }
 
     public void clear() {
@@ -129,7 +151,24 @@ public class CaptureValues extends BaseObservable {
         reset();
     }
 
+    public String getName() {
+        if (type == -1) {
+            return "GPS";
+        } else if (type == Sensor.TYPE_ACCELEROMETER) {
+            return "加速度";
+        } else if (type == Sensor.TYPE_GYROSCOPE) {
+            return "陀螺仪";
+        }
+        return "";
+    }
+
     public class CaptureTask extends TimerTask {
+
+        int type;
+
+        public CaptureTask(int type) {
+            this.type = type;
+        }
 
         @Override
         public void run() {
@@ -143,53 +182,31 @@ public class CaptureValues extends BaseObservable {
                     if (event == null) {
                         return;
                     }
-                    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                        value.accelerometerTime = ((SensorInfo) info).getTimestamp() + "";
-                        value.aX = event.values[0] + "";
-                        value.aY = event.values[1] + "";
-                        value.aZ = event.values[2] + "";
-                    } else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                        value.gyroscopeTime = ((SensorInfo) info).getTimestamp() + "";
-                        value.gX = event.values[0] + "";
-                        value.gY = event.values[1] + "";
-                        value.gZ = event.values[2] + "";
-
+                    if (event.sensor.getType() == type) {
+                        value.type = type;
+                        value.time = ((SensorInfo) info).getTimestamp() + "";
+                        value.x = event.values[0] + "";
+                        value.y = event.values[1] + "";
+                        value.z = event.values[2] + "";
+                        value.name = event.sensor.getName() + "";
                     }
+                } else if (info instanceof LocationInfo && type == -1) {
 
-
-                } else if (info instanceof LocationInfo) {
 
                     Location location = ((LocationInfo) info).getLocation();
                     if (location != null) {
-                        value.gpsTime = location.getTime() + "";
-                        value.latitude = location.getLatitude() + "";
-                        value.longitude = location.getLongitude() + "";
-                        value.altitude = location.getAltitude()+"";
+                        value.time = location.getTime() + "";
+                        value.x = location.getLongitude() + "";
+                        value.y = location.getLatitude() + "";
+                        value.z = location.getAltitude() + "";
+                        value.name = "GPS";
+                        value.type = type;
                     }
+                    break;
                 }
-
             }
             add(value);
 
         }
-    }
-
-    // 根据文件后缀名获得对应的MIME类型。
-    private static String getMimeType(String filePath) {
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        String mime = "*/*";
-        if (filePath != null) {
-            try {
-                mmr.setDataSource(filePath);
-                mime = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
-            } catch (IllegalStateException e) {
-                return mime;
-            } catch (IllegalArgumentException e) {
-                return mime;
-            } catch (RuntimeException e) {
-                return mime;
-            }
-        }
-        return mime;
     }
 }

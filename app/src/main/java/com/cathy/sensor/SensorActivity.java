@@ -27,7 +27,7 @@ import com.and.support.recyclerview.ObservableAdapter;
 import com.and.support.recyclerview.ObservableList;
 import com.and.support.recyclerview.tools.SimpleViewBound;
 import com.cathy.sensor.databinding.ActivitySensorBinding;
-import com.cathy.sensor.vo.CaptureValues;
+import com.cathy.sensor.vo.Capture;
 import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
 
@@ -40,7 +40,7 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
 
 
     private LocationManager mLocationManager;
-    private CaptureValues mValues;
+    private Capture mValues;
 
 
     private ObservableList<Object> presenter = new ObservableList<>();
@@ -60,14 +60,14 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         ObservableAdapter adapter = new ObservableAdapter(presenter);
         adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
                 .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
-                .addViewBinder(CaptureValues.class, new SimpleViewBound(BR.data, R.layout.item_capture_task));
+                .addViewBinder(Capture.class, new SimpleViewBound(BR.data, R.layout.item_capture_task));
 
         binding.recyclerView.setAdapter(adapter);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assert mSensorManager != null;
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         assert mLocationManager != null;
-        mValues = new CaptureValues(adapter.getItems());
+        mValues = new Capture(adapter.getItems());
         checkLocation();
         presenter.insert(mValues);
 

@@ -14,12 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import jxl.Workbook;
-import jxl.write.Label;
-import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
 
 /**
  * Created by xianggaofeng on 2018/3/20.
@@ -97,112 +92,14 @@ public class FilePresenter {
             {"", "*/*"}
     };
 
-    public synchronized String saveExcel(List<CaptureValue> list, String filePath) {
+
+
+    public synchronized String saveText(List<CaptureValue> list, String filePath,String name) {
         boolean result = false;
         WritableWorkbook workbook = null;
 
 
-        filePath = filePath + File.separator + System.currentTimeMillis() + ".txt";
-
-        Log.d("xgf", "" + filePath);
-        File file = new File(filePath);
-        File parent = file.getParentFile();
-        if (parent != null) {
-            parent.mkdirs();
-        }
-        try {
-            workbook = Workbook.createWorkbook(file);
-            WritableSheet sheet = workbook.createSheet("First Sheet", 0);
-            // 增加表头
-            int r = 0;
-            int c = 0;
-            sheet.addCell(new Label(c++, r, "GPS time"));
-            sheet.addCell(new Label(c++, r, "Latitude"));
-            sheet.addCell(new Label(c++, r, "Longitude"));
-            sheet.addCell(new Label(c++, r, "Altitude"));
-            sheet.addCell(new Label(c++, r, "Accelerometer Time"));
-            sheet.addCell(new Label(c++, r, "X"));
-            sheet.addCell(new Label(c++, r, "Y"));
-            sheet.addCell(new Label(c++, r, "Z"));
-
-            sheet.addCell(new Label(c++, r, "Gyroscope Time"));
-            sheet.addCell(new Label(c++, r, "X"));
-            sheet.addCell(new Label(c++, r, "Y"));
-            sheet.addCell(new Label(c, r, "Z"));
-
-
-            CaptureValue value;
-            for (r = 1; r < list.size(); r++) {
-                c = 0;
-                value = list.get(r);
-
-                sheet.addCell(new Label(c++, r, value.gpsTime));
-                sheet.addCell(new Label(c++, r, value.latitude));
-                sheet.addCell(new Label(c++, r, value.longitude));
-                sheet.addCell(new Label(c++, r, value.altitude));
-                sheet.addCell(new Label(c++, r, value.accelerometerTime));
-                sheet.addCell(new Label(c++, r, value.aX));
-                sheet.addCell(new Label(c++, r, value.aY));
-                sheet.addCell(new Label(c++, r, value.aZ));
-
-                sheet.addCell(new Label(c++, r, value.gyroscopeTime));
-                sheet.addCell(new Label(c++, r, value.gX));
-                sheet.addCell(new Label(c++, r, value.gY));
-                sheet.addCell(new Label(c, r, value.gZ));
-
-//                sheet.addCell(new Label(c, r++, value.gpsTime));
-//                sheet.addCell(new Label(c, r++, value.latitude));
-//                sheet.addCell(new Label(c, r++, value.longitude));
-//                sheet.addCell(new Label(c, r++, value.accelerometerTime));
-//                sheet.addCell(new Label(c, r++, value.aX));
-//                sheet.addCell(new Label(c, r++, value.aY));
-//                sheet.addCell(new Label(c, r++, value.aZ));
-//                sheet.addCell(new Label(c, r++, value.gyroscopeTime));
-//                sheet.addCell(new Label(c, r++, value.gX));
-//                sheet.addCell(new Label(c, r++, value.gY));
-//                sheet.addCell(new Label(c, r, value.gZ));
-
-            }
-
-
-            workbook.write();
-            result = true;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            result = false;
-        } catch (RowsExceededException e) {
-            e.printStackTrace();
-            result = false;
-        } catch (WriteException e) {
-            e.printStackTrace();
-            result = false;
-        } finally {
-            try {
-                if (workbook != null) {
-
-                    workbook.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (WriteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (result) {
-            return filePath;
-        }
-        return null;
-    }
-
-
-    public synchronized String saveText(List<CaptureValue> list, String filePath) {
-        boolean result = false;
-        WritableWorkbook workbook = null;
-
-
-        filePath = filePath + File.separator + System.currentTimeMillis() + ".txt";
+        filePath = filePath + File.separator + name+"_"+System.currentTimeMillis() + ".txt";
 
         Log.d("xgf", "" + filePath);
         File file = new File(filePath);
@@ -215,56 +112,20 @@ public class FilePresenter {
             writer = new FileWriter(file);
 
             StringBuilder builder = new StringBuilder();
-            builder.append("GPS time")
-                    .append(", ")
-                    .append("Latitude")
-                    .append(", ")
-                    .append("Longitude")
-                    .append(", ")
-                    .append("Altitude")
-                    .append(", ")
-                    .append("Accelerometer Time")
-                    .append(", ")
-                    .append("X")
-                    .append(", ")
-                    .append("Y")
-                    .append(", ")
-                    .append("Z")
-                    .append(", ")
-                    .append("Gyroscope Time")
-                    .append(", ")
-                    .append("X")
-                    .append(", ")
-                    .append("Y")
-                    .append(", ")
-                    .append("Z")
-                    .append("\n");
             CaptureValue value;
             for (int i = 1; i < list.size(); i++) {
                 value = list.get(i);
-                builder.append(value.gpsTime)
+                builder.append(value.type)
                         .append(", ")
-                        .append(value.latitude)
+                        .append(value.name)
                         .append(", ")
-                        .append(value.longitude)
+                        .append(value.x)
                         .append(", ")
-                        .append(value.altitude)
+                        .append(value.y)
                         .append(", ")
-                        .append(value.accelerometerTime)
+                        .append(value.z)
                         .append(", ")
-                        .append(value.aX)
-                        .append(", ")
-                        .append(value.aY)
-                        .append(", ")
-                        .append(value.aZ)
-                        .append(", ")
-                        .append(value.gyroscopeTime)
-                        .append(", ")
-                        .append(value.gX)
-                        .append(", ")
-                        .append(value.gY)
-                        .append(", ")
-                        .append(value.gZ)
+                        .append(value.time)
                         .append("\n");
             }
 
