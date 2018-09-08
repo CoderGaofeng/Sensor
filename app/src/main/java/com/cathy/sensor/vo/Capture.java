@@ -12,7 +12,7 @@ public class Capture {
         this.list = list;
         values.set(new CaptureValues(list, -1));
         gValues.set(new CaptureValues(list, Sensor.TYPE_GYROSCOPE));
-        aValues.set(new CaptureValues(list,Sensor.TYPE_GYROSCOPE));
+        aValues.set(new CaptureValues(list,Sensor.TYPE_ACCELEROMETER));
     }
 
     private ObservableField<CaptureValues> values = new ObservableField<>();
