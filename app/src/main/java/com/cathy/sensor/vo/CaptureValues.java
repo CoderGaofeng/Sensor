@@ -58,9 +58,9 @@ public class CaptureValues extends BaseObservable {
 
         if (running) {
 
-            if(timer==null){
-                timer = new Timer();
-            }
+//            if(timer==null){
+//                timer = new Timer();
+//            }
             timer.purge();
             int period;
             if (type == -1) {
@@ -68,19 +68,16 @@ public class CaptureValues extends BaseObservable {
             } else {
                 period = 25;
             }
-            timer.schedule(new CaptureTask(type), 50, period);
+            timerTask = new CaptureTask(type);
+            timer.schedule(timerTask, 50, period);
 
         } else {
+
             if(timerTask!=null){
                 timerTask.cancel();
                 timerTask=null;
             }
-            if(timer!=null){
-                timer.purge();
-                timer.cancel();
-                timer = null;
-
-            }
+            timer.purge();
 
         }
         notifyPropertyChanged(BR.running);
@@ -143,15 +140,10 @@ public class CaptureValues extends BaseObservable {
         if (timerTask != null) {
             timerTask.cancel();
             timerTask = null;
-        }
-        if (timer != null) {
-            timer.cancel();
             timer.purge();
-            timer = null;
         }
-
-
         reset();
+        timer.cancel();
     }
 
     public String getName() {
