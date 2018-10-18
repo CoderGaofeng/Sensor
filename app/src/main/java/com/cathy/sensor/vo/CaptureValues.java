@@ -153,6 +153,8 @@ public class CaptureValues extends BaseObservable {
             return "加速度";
         } else if (type == Sensor.TYPE_GYROSCOPE) {
             return "陀螺仪";
+        }else if(type==Sensor.TYPE_MAGNETIC_FIELD){
+            return "磁力计";
         }
         return "";
     }
@@ -175,7 +177,7 @@ public class CaptureValues extends BaseObservable {
 
                     SensorEvent event = ((SensorInfo) info).getEvent();
                     if (event == null) {
-                        return;
+                        continue;
                     }
                     if (event.sensor.getType() == type) {
                         value.type = type;

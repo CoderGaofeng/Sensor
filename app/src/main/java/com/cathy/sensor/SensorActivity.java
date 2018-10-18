@@ -9,29 +9,39 @@ import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.and.support.recyclerview.DataBoundAdapter;
 import com.and.support.recyclerview.DataBoundViewHolder;
 import com.and.support.recyclerview.ObservableAdapter;
 import com.and.support.recyclerview.ObservableList;
+import com.and.support.recyclerview.ViewBinder;
+import com.and.support.recyclerview.ViewHolder;
 import com.and.support.recyclerview.tools.SimpleViewBound;
 import com.cathy.sensor.databinding.ActivitySensorBinding;
 import com.cathy.sensor.vo.Capture;
 import com.cathy.sensor.vo.LocationInfo;
 import com.cathy.sensor.vo.SensorInfo;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
@@ -60,9 +70,56 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         ObservableAdapter adapter = new ObservableAdapter(presenter);
         adapter.addViewBinder(SensorInfo.class, new SimpleViewBound(BR.data, R.layout.item_sensor))
                 .addViewBinder(LocationInfo.class, new SimpleViewBound(BR.data, R.layout.item_gps))
-                .addViewBinder(Capture.class, new SimpleViewBound(BR.data, R.layout.item_capture_task));
+                .addViewBinder(Capture.class, new SimpleViewBound(BR.data, R.layout.item_capture_task))
+                .addViewBinder(String.class, new ViewBinder() {
+                    @Override
+                    public ViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent) {
+                        View view = new EventTextView(parent.getContext());
+                        view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,parent.getHeight()/2));
+                        return new ViewHolder(view);
+                    }
+
+                    @Override
+                    public void onBindViewHolder(ViewHolder holder, List payloads) {
+//                        String tmp = holder.getItem();
+//                        TextView textView = (TextView) holder.itemView;
+//                        textView.setText(tmp);
+                    }
+                });
 
         binding.recyclerView.setAdapter(adapter);
+        StringBuilder builder = new StringBuilder();
+        Field[] fields = Build.class.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            builder.append("\n");
+            Field field = fields[i];
+            try {
+                builder.append("\"" + field.getName() + "\" = ");
+                Object object = field.get(null);
+                if (object.getClass().isArray()){
+                    Object[] objects = (Object[]) object;
+                    builder.append(Arrays.toString(objects));
+                }else {
+                    builder.append(object+"");
+                }
+
+
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        builder.append("\n");
+        builder.append("\"" + "reabi" + "\" = ")
+                .append(getSystemProperties("ro.product.cpu.abi",Build.CPU_ABI));
+        builder.append("\n");
+        builder.append("\"" + "reabi2" + "\" = ")
+                .append(getSystemProperties("ro.product.cpu.abi2",Build.CPU_ABI2));
+//        presenter.insert(builder.toString());
+
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assert mSensorManager != null;
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -72,8 +129,19 @@ public class SensorActivity extends DataBoundActivity<ActivitySensorBinding> {
         checkLocation();
 
 
+    }
 
+    public static String getSystemProperties(String key, String defVal) {
+        try {
 
+            Class<?> SystemProperties = Class.forName("android.os.SystemProperties");
+            Method SystemPropertiesGet = SystemProperties.getDeclaredMethod("get", new Class[]{String.class, String.class});
+            SystemPropertiesGet.setAccessible(true);
+            return (String) SystemPropertiesGet.invoke(null, new Object[]{key, defVal});
+        } catch (Exception e) {
+            Log.w(TAG, "getSystemProperties failed", e);
+        }
+        return defVal;
     }
 
     @Override

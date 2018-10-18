@@ -13,12 +13,17 @@ public class Capture {
         values.set(new CaptureValues(list, -1));
         gValues.set(new CaptureValues(list, Sensor.TYPE_GYROSCOPE));
         aValues.set(new CaptureValues(list,Sensor.TYPE_ACCELEROMETER));
+        mValues.set(new CaptureValues(list,Sensor.TYPE_MAGNETIC_FIELD));
     }
 
     private ObservableField<CaptureValues> values = new ObservableField<>();
     private ObservableField<CaptureValues> gValues = new ObservableField<>();
     private ObservableField<CaptureValues> aValues = new ObservableField<>();
+    private ObservableField<CaptureValues> mValues = new ObservableField<>();
 
+    public ObservableField<CaptureValues> getMValues() {
+        return mValues;
+    }
 
     public ObservableList getList() {
         return list;
@@ -56,6 +61,7 @@ public class Capture {
         values.get().cancel();
         gValues.get().cancel();
         aValues.get().cancel();
+        mValues.get().cancel();
     }
 
     public boolean isRunning() {
@@ -66,6 +72,7 @@ public class Capture {
         values.get().setRunning(running);
         gValues.get().setRunning(running);
         aValues.get().setRunning(running);
+        mValues.get().setRunning(running);
 
     }
 

@@ -6,8 +6,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
+import android.view.MotionEvent;
 
 import com.cathy.sensor.BR;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class SensorInfo extends BaseObservable {
 
@@ -49,9 +54,86 @@ public class SensorInfo extends BaseObservable {
         this.event = event;
         notifyPropertyChanged(BR.event);
         notifyPropertyChanged(BR.timestamp);
+        notifyPropertyChanged(BR.content);
     }
 
 
+    @Bindable
+    public String getContent(){
+        if(event==null){
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        Field[] fields = SensorEvent.class.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            builder.append("\n");
+            Field field = fields[i];
+            try {
+                builder.append("\"" + field.getName() + "\" = ");
+
+                Object object = field.get(event);
+
+                if (object.getClass().isArray()){
+                    if(object instanceof Object[]){
+                        builder.append(Arrays.toString((Object[]) object));
+                    } else if (object instanceof boolean[]) {
+                        builder.append(Arrays.toString((boolean[]) object));
+                    } else if (object instanceof byte[]) {
+                        builder.append(Arrays.toString((byte []) object));
+                    } else if (object instanceof char[]) {
+                        builder.append(Arrays.toString((char[]) object));
+                    } else if (object instanceof double[]) {
+                        builder.append(Arrays.toString((double []) object));
+                    } else if (object instanceof float[]) {
+                        builder.append(Arrays.toString((float []) object));
+                    } else if (object instanceof int[]) {
+                        builder.append(Arrays.toString((int []) object));
+                    } else if (object instanceof long[]) {
+                        builder.append(Arrays.toString((long []) object));
+                    } else if (object instanceof short[]) {
+                        builder.append(Arrays.toString((short []) object));
+                    }
+
+
+                }else {
+                    builder.append(object+"");
+                }
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        Sensor sensor = event.sensor;
+        if(sensor!=null){
+            builder.append("\n");
+            builder.append("\"" + "getFifoMaxEventCount()" + "\" = ");
+            builder.append(sensor.getFifoMaxEventCount()+"");
+            builder.append("\n");
+            builder.append("\"" + "getFifoReservedEventCount()" + "\" = ");
+            builder.append(sensor.getFifoReservedEventCount()+"");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.append("\n");
+                builder.append("\"" + "getHighestDirectReportRateLevel()" + "\" = ");
+                builder.append(sensor.getHighestDirectReportRateLevel()+"");
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                builder.append("\n");
+                builder.append("\"" + "getId()" + "\" = ");
+                builder.append(sensor.getId()+"");
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.append("\n");
+                builder.append("\"" + "getMaxDelay()" + "\" = ");
+                builder.append(sensor.getMaxDelay()+"");
+            }
+        }
+        return builder.toString();
+    }
     public String getTitle() {
         return sensor.getName();
     }

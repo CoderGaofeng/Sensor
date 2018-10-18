@@ -16,6 +16,5 @@ public abstract class DataBoundActivity<T extends ViewDataBinding> extends AppCo
         binding = DataBindingUtil.setContentView(this, getLayoutId());
     }
 
-    public abstract @LayoutRes
-    int getLayoutId();
+    public abstract @LayoutRes int getLayoutId();
 }
